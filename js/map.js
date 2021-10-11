@@ -1,5 +1,8 @@
-//definicion de mapa
-var mymap = L.map('map').setView([3.4114696,-76.5233574], 12);
+var mymap, featureList, boroughSearch = [], theaterSearch = [], museumSearch = [];
+
+
+
+
 
 //mapas base
 var basemaps ={
@@ -7,7 +10,7 @@ var basemaps ={
 			  maxZoom: 19,
 			  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>'
 			}),
-	aerial: L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	OMS: L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         subdomains: ['a','b','c']
     })
@@ -16,6 +19,24 @@ var basemaps ={
 };
 
 
+/* Single marker cluster layer to hold all clusters */
+// var markerClusters = new L.MarkerClusterGroup({
+//   spiderfyOnMaxZoom: true,
+//   showCoverageOnHover: false,
+//   zoomToBoundsOnClick: true,
+//   disableClusteringAtZoom: 16
+// });
+
+//definicion de mapa
+mymap = L.map('map').setView([3.4114696,-76.5233574], 12);
+// mymap = L.map("map", {
+//   zoom: 12,
+//   center: [3.4114696,-76.5233574],
+//   layers: [basemaps.cartoLight, cartoLight.OMS, markerClusters, highlight],
+//   zoomControl: false,
+//   attributionControl: false
+// });
+
 //mapa base predeterminado
 basemaps.cartoLight.addTo(mymap);
 
@@ -23,6 +44,40 @@ basemaps.cartoLight.addTo(mymap);
 //agrupacion de capas
 L.control.groupedLayers(basemaps).addTo(mymap);
 
+// enfoque a elementos
+var highlight = L.geoJson(null);
+var highlightStyle = {
+  stroke: false,
+  fillColor: "#00FFFF",
+  fillOpacity: 0.7,
+  radius: 10
+};
+
+
+//limites cali
+var cali = L.geoJson(null, {
+  style: function (feature) {
+    return {
+      color: "black",
+      fill: false,
+      opacity: 1,
+      clickable: false
+    };
+  },
+  onEachFeature: function (feature, layer) {
+    // boroughSearch.push({
+    //   name: layer.feature.properties.BoroName,
+    //   source: "Boroughs",
+    //   id: L.stamp(layer),
+    //   bounds: layer.getBounds()
+    // });
+  }
+});
+$.getJSON("js/data/cali.geojson", function (data) {
+  cali.addData(data);
+});
+
+cali.addTo(mymap);
 
 //capa de hoteles
 var hotelsLayer = L.geoJson(null);
@@ -156,3 +211,6 @@ $.getJSON("js/data/turisticos.geojson", function (data) {
 });
 
 poi.addTo(mymap);
+
+
+
